@@ -14,3 +14,8 @@ set(TESTED_SOURCE
     ../examples/autotest-validate/autotest-validate.c
 )
 add_subdirectory(assignment-autotest)
+add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/test/assignment1/Test_hello_Runner.c
+    COMMAND ${CMAKE_COMMAND} -E env bash ${CMAKE_SOURCE_DIR}/assignment-autotest/auto_generate.sh
+    DEPENDS ${CMAKE_SOURCE_DIR}/assignment-autotest/auto_generate.sh
+)
