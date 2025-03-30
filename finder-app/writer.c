@@ -5,26 +5,33 @@
 
 int main(int argc, char *argv[]) {
     if (argc != 3) {
-        syslog(LOG_ERR, "Incorrect number of arguments.");
-        return 1;
+        fprintf(stderr, "error: need two arguments\n");
+        exit(1);
     }
 
-    const char *file_path = argv[1];
-    const char *text_to_write = argv[2];
+    const char *writefile = argv[1];
+    const char *writestr = argv[2];
 
-    // Open file for writing
-    FILE *file = fopen(file_path, "w");
+    // Open syslog for logging
+    openlog("writer", LOG_PID | LOG_CONS, LOG_USER);
+
+    // Log the debug message
+    syslog(LOG_DEBUG, "Writing %s to %s", writestr, writefile);
+
+    // Open the file for writing
+    FILE *file = fopen(writefile, "w");
     if (file == NULL) {
-        syslog(LOG_ERR, "Error opening file: %s", file_path);
-        return 1;
+        syslog(LOG_ERR, "error: can't create %s", writefile);
+        perror("fopen");
+        exit(1);
     }
 
-    // Write text to file
-    fprintf(file, "%s", text_to_write);
-    fclose(file);
+    // Write the string to the file
+    fprintf(file, "%s", writestr);
 
-    // Log the success
-    syslog(LOG_DEBUG, "Writing '%s' to '%s'", text_to_write, file_path);
+    // Close the file and syslog
+    fclose(file);
+    closelog();
 
     return 0;
 }
